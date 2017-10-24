@@ -25,6 +25,62 @@ def resourceAllocation(a, r, kValue, eqClasses,  initialAllocations, seed):
             myFile.write(str(resource)[1: -1] + ' ' + '\n')
         myFile.close()
 
+
+def merge(a,b):
+    c = []
+    while len(a) != 0 and len(b) != 0:
+        if a[0] < b[0]:
+            c.append(a[0])
+            a.remove(a[0])
+        else:
+            c.append(b[0])
+            b.remove(b[0])
+    if len(a) == 0:
+        c += b
+    else:
+        c += a
+    return c
+
+def mergesort(x):
+    if len(x) == 0 or len(x) == 1:
+        return x
+    else:
+        middle = len(x)/2
+        a = mergesort(x[:middle])
+        b = mergesort(x[middle:])
+        return merge(a,b)
+
+def reversemergesort(x):
+    return mergesort(x)[::-1]
+
+def sortLine(string, order):
+    string = string.split(',')
+    for item in string:
+        if item == '' or item == ' ':
+            string.remove(item)
+    if order == 0:
+        mergesort(string)
+    elif order == 1:
+        reversemergesort(string)
+    
+    return ",".join(map(str,string))
+
+
+def sortResources(preferenceFile, sortorder):
+    #we will sort each line of the file in numeric order
+    myFile = open(preferenceFile, 'r')
+    newFile = open('ordered.txt', 'w+')
+    for line in myFile:
+        newline = sortLine(line, sortorder)
+        newFile.write(newline)
+        
+    with open(preferenceFile, 'w+') as output, open('ordered', 'r') as input:
+        while True:
+            data = input.read(100000)
+            if data == '':  # end of file reached
+                break
+            output.write(data)
+    
 def chunks(l, n):
      for i in range(0, len(l), n):
         yield l[i:i + n]
@@ -195,6 +251,7 @@ def timeGraph(maxAgents, maxResources, kValue, eqClasses, resolution,  runs, ini
         times1 = []
         for x in range(resolution):
             resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, eqClasses, initAll, random.randint(0, 100000))
+            sortResources("C:\\Users\\Jake From State Farm\\Desktop\\new.txt", 1)
             start_time = time.clock()
             RICA("C:\\Users\\Jake From State Farm\\Desktop\\new.txt")
             times1.append(time.clock() - start_time)
@@ -210,11 +267,8 @@ def timeGraph(maxAgents, maxResources, kValue, eqClasses, resolution,  runs, ini
     plt.title('Runtimes for ' + 'RICA' + ': k =' + str(kValue))
     plt.show()
     #graph times
-timeGraph(10000,10000, 6, 4, 10, 1, 0)
             
-def paretoGraph(maxAgents, maxResources, kValue, resolution, runs, initAll):
-    if algorithm == 'RICA' or algorithm == 'RECA':
-        assert initAll == 0
+def paretoGraph(maxAgents, maxResources, kValue, eqClasses, resolution, runs, initAll):
     paretos = []
     agents = [(int(maxAgents / resolution * x)) for x in range(resolution)]
     divisions = int(maxAgents / resolution)
@@ -223,7 +277,7 @@ def paretoGraph(maxAgents, maxResources, kValue, resolution, runs, initAll):
         print(z)
         paretos1 = []
         for x in range(1, resolution + 1):
-            resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, initAll, random.randint(0, 100000))
+            resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, eqClasses, initAll, random.randint(0, 100000))
             RICA("C:\\Users\\Jake From State Farm\\Desktop\\new.txt")
             paretos1.append(paretoChecker())
             paretos.append(paretos1)
@@ -238,10 +292,9 @@ def paretoGraph(maxAgents, maxResources, kValue, resolution, runs, initAll):
     plt.title('Pareto-Swaps for ' + 'RICA' + ': k =' + str(kValue))
     plt.show()
     #graph
-    
-def envyGraph(maxAgents, maxResources, kValue, resolution, runs, initAll):
-    if algorithm == 'RICA' or algorithm == 'RECA':
-        assert initAll == 0
+
+
+def envyGraph(maxAgents, maxResources, kValue, eqClasses, resolution, runs, initAll):
     envys = []
     agents = [(int(maxAgents / resolution * x)) for x in range(resolution)]
     divisions = int(maxAgents / resolution)
@@ -250,7 +303,7 @@ def envyGraph(maxAgents, maxResources, kValue, resolution, runs, initAll):
         print(z)
         envys1 = []
         for x in range(1, resolution + 1):
-            resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, initAll, random.randint(0, 100000))
+            resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, eqClasses, initAll, random.randint(0, 100000))
             RICA("C:\\Users\\Jake From State Farm\\Desktop\\new.txt")
             envys1.append(envyChecker())
             envys.append(envys1)
@@ -264,3 +317,5 @@ def envyGraph(maxAgents, maxResources, kValue, resolution, runs, initAll):
     plt.ylabel('Envious Agents')
     plt.title('Envious Agents for ' + 'RICA' + ': k =' + str(kValue))
     plt.show()
+
+timeGraph(100,100, 5, 1, 10, 1, 0)

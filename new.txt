@@ -1,0 +1,1 @@
+Agents: 0 Resources: 0 K Value: 5 Eq. Classes: 1
