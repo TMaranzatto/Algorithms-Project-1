@@ -45,7 +45,7 @@ def mergesort(x):
     if len(x) == 0 or len(x) == 1:
         return x
     else:
-        middle = len(x)/2
+        middle = int(len(x)/2)
         a = mergesort(x[:middle])
         b = mergesort(x[middle:])
         return merge(a,b)
@@ -53,28 +53,37 @@ def mergesort(x):
 def reversemergesort(x):
     return mergesort(x)[::-1]
 
-def sortLine(string, order):
-    string = string.split(',')
+def sortLine(strg, order):
+    string = strg.split(',')
     for item in string:
-        if item == '' or item == ' ':
+        if item == '' or item == ' ' or item == '\n':
             string.remove(item)
+        item = int(item)
+    string = list(map(int, string))
+    
     if order == 0:
-        mergesort(string)
+        string = mergesort(string)
     elif order == 1:
-        reversemergesort(string)
+        string = reversemergesort(string)
     
     return ",".join(map(str,string))
 
-
 def sortResources(preferenceFile, sortorder):
     #we will sort each line of the file in numeric order
+    #0 is sorted in order, 1 is reverse sorted
     myFile = open(preferenceFile, 'r')
     newFile = open('ordered.txt', 'w+')
+    first = myFile.readline()
+    newFile.write(first)
     for line in myFile:
+        #print(line)
         newline = sortLine(line, sortorder)
-        newFile.write(newline)
+        #print(newline)
+        newFile.write(newline + '\n')
+    myFile.close();
+    newFile.close();
         
-    with open(preferenceFile, 'w+') as output, open('ordered', 'r') as input:
+    with open(preferenceFile, 'w+') as output, open('ordered.txt', 'r') as input:
         while True:
             data = input.read(100000)
             if data == '':  # end of file reached
@@ -96,7 +105,7 @@ def RicaFileMaker(preferenceFile):
     assignedObjects = []
     unassignedAgents = []
     
-    eqLevels = [{} for x in range(int(k) - 1)]
+    eqLevels = [{} for x in range(int(preferenceClasses))]
     agentLocations = [{} for x in range(int(a))]
 
     currentAgent = 0
@@ -251,9 +260,9 @@ def timeGraph(maxAgents, maxResources, kValue, eqClasses, resolution,  runs, ini
         times1 = []
         for x in range(resolution):
             resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, eqClasses, initAll, random.randint(0, 100000))
-            sortResources("C:\\Users\\Jake From State Farm\\Desktop\\new.txt", 1)
+            sortResources("C:\\Users\\Jake From State Farm\\Documents\\GitHub\\Algorithms-Project-1\\new.txt", 1)
             start_time = time.clock()
-            RICA("C:\\Users\\Jake From State Farm\\Desktop\\new.txt")
+            RICA("C:\\Users\\Jake From State Farm\\Documents\\GitHub\\Algorithms-Project-1\\new.txt")
             times1.append(time.clock() - start_time)
             times.append(times1)
             
@@ -264,7 +273,7 @@ def timeGraph(maxAgents, maxResources, kValue, eqClasses, resolution,  runs, ini
     plt.errorbar(agents, averageTimes, yerr = standardDeviations, fmt = 'o')
     plt.xlabel('Agents')
     plt.ylabel('Runtimes (s)')
-    plt.title('Runtimes for ' + 'RICA' + ': k =' + str(kValue))
+    plt.title('Runtimes for ' + 'RICA' + ': k = ' + str(kValue) + ' Eq. Classes = ' + str(eqClasses))
     plt.show()
     #graph times
             
@@ -278,7 +287,8 @@ def paretoGraph(maxAgents, maxResources, kValue, eqClasses, resolution, runs, in
         paretos1 = []
         for x in range(1, resolution + 1):
             resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, eqClasses, initAll, random.randint(0, 100000))
-            RICA("C:\\Users\\Jake From State Farm\\Desktop\\new.txt")
+            #sortResources("C:\\Users\\Jake From State Farm\\Documents\\GitHub\\Algorithms-Project-1\\new.txt", 0)
+            RICA("C:\\Users\\Jake From State Farm\\Documents\\GitHub\\Algorithms-Project-1\\new.txt")
             paretos1.append(paretoChecker())
             paretos.append(paretos1)
     
@@ -289,7 +299,7 @@ def paretoGraph(maxAgents, maxResources, kValue, eqClasses, resolution, runs, in
     plt.errorbar(agents, averageParetos, yerr = standardDeviations, fmt = 'o')
     plt.xlabel('Agents')
     plt.ylabel('Pareto-Swaps')
-    plt.title('Pareto-Swaps for ' + 'RICA' + ': k =' + str(kValue))
+    plt.title('Pareto-Swaps for ' + 'RICA' + ': k = ' +  str(kValue) + ' Eq. Classes = ' + str(eqClasses))
     plt.show()
     #graph
 
@@ -304,7 +314,8 @@ def envyGraph(maxAgents, maxResources, kValue, eqClasses, resolution, runs, init
         envys1 = []
         for x in range(1, resolution + 1):
             resourceAllocation(int(maxAgents / resolution * x), int(maxResources / resolution * x), kValue, eqClasses, initAll, random.randint(0, 100000))
-            RICA("C:\\Users\\Jake From State Farm\\Desktop\\new.txt")
+            #sortResources("C:\\Users\\Jake From State Farm\\Documents\\GitHub\\Algorithms-Project-1\\new.txt", 1)
+            RICA("C:\\Users\\Jake From State Farm\\Documents\\GitHub\\Algorithms-Project-1\\new.txt")
             envys1.append(envyChecker())
             envys.append(envys1)
             
@@ -315,7 +326,6 @@ def envyGraph(maxAgents, maxResources, kValue, eqClasses, resolution, runs, init
     plt.errorbar(agents, averageEnvys, yerr = standardDeviations, fmt = 'o')
     plt.xlabel('Agents')
     plt.ylabel('Envious Agents')
-    plt.title('Envious Agents for ' + 'RICA' + ': k =' + str(kValue))
+    plt.title('Envious Agents for ' + 'RICA' + ': k = ' + str(kValue) + ' Eq. Classes = ' + str(eqClasses))
     plt.show()
-
-timeGraph(100,100, 5, 1, 10, 1, 0)
+paretoGraph(1000,1000, 3, 33,  10, 1, 0)
