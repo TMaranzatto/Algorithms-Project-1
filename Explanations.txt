@@ -1,0 +1,13 @@
+1.  *Explaining a problem and an algorithm to solve the problem.
+2.  *Implementing an algorithm.
+3.  *Testing the implementation on a wide range of inputs, for correctness.
+5.  Comparing running times on sorted, reverse-sorted, and random inputs.
+10. Analyzing the rate of growth of the algorithm on sorted, reverse-sorted, and random inputs.
+
+1. The algorithm is an implementation for resource allocation...
+
+2. Shown in "Algorithms Project 1- Max and Jake.py"
+
+3. (Samples of data with example input and the output...)
+
+5. 
